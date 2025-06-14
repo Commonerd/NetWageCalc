@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>US Net Wage Calculator | NetWageCalc - See Your Take-Home Pay Instantly</title>
+    <meta name="description" content="Quickly and easily calculate your US take-home pay for W-2 or 1099 income. See federal tax, state tax, Social Security & Medicare tax (FICA/SE tax), and other deductions at a glance. Save and compare various scenarios to understand your salary better.">
+    <meta name="keywords" content="US net wage calculator, salary calculation, take home pay, net pay, federal tax, state tax, social security tax, medicare tax, self-employment tax, 1099 tax, W-2 tax, paycheck calculator US, salary calculator, deductions, 401k, health insurance">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💰</text></svg>">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Tailwind CSS CDN */
+        @import url('https://cdn.tailwindcss.com');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top initially to allow scrolling */
+            min-height: 100vh;
+            margin: 0;
+            padding: 1.5rem; /* Increased base padding */
+            box-sizing: border-box;
+            line-height: 1.6;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 2rem; /* Generous padding */
+            border-radius: 1rem; /* More rounded corners */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); /* Soft shadow */
+            width: 100%;
+            max-width: 800px;
+            box-sizing: border-box;
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem; /* Increased gap between sections */
+        }
+
+        h1 {
+            font-size: 2.5rem; /* Larger heading */
+            font-weight: 700;
+            color: #1a202c; /* Dark gray */
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-section, .output-section, .scenario-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem; /* Spacing between input groups */
+            padding: 1.5rem; /* Increased section padding */
+            border-radius: 0.75rem; /* Rounded corners for sections */
+            background-color: #f9fafb; /* Lighter background for sections */
+            border: 1px solid #e5e7eb; /* Light border */
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem; /* Spacing between label and input */
+        }
+
+        label {
+            font-weight: 600;
+            color: #2d3748; /* Medium dark gray */
+            font-size: 0.95rem;
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            padding: 0.75rem; /* Increased input padding */
+            border: 1px solid #cbd5e0; /* Light gray border */
+            border-radius: 0.5rem; /* Rounded input fields */
+            font-size: 1rem;
+            color: #4a5568; /* Gray text */
+            background-color: #ffffff;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); /* Subtle inner shadow */
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="number"]:focus, select:focus {
+            border-color: #6366f1; /* Indigo focus color */
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.25); /* Larger focus ring */
+        }
+
+        .input-row {
+            display: flex;
+            gap: 1.25rem; /* Gap between columns */
+            flex-wrap: wrap; /* Allow wrapping */
+        }
+
+        .input-row > div {
+            flex: 1 1 calc(50% - 0.625rem); /* Two columns on larger screens */
+            min-width: 280px; /* Minimum width before wrapping, adjusted for new padding */
+        }
+
+        .output-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center; /* Vertically align items */
+            padding: 0.75rem 0; /* Increased vertical padding */
+            border-bottom: 1px dashed #e2e8f0; /* Dashed line for separation */
+        }
+
+        .output-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .output-item span:first-child {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .output-item span:last-child {
+            font-weight: 700;
+            color: #000000;
+        }
+        
+        .output-item.net-pay span {
+            color: #22c55e; /* Green for net pay */
+            font-size: 1.15rem; /* Slightly larger net pay font */
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem; /* Gap between buttons */
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 1rem; /* Space above buttons */
+        }
+
+        button {
+            padding: 0.75rem 1.5rem; /* Generous button padding */
+            border: none;
+            border-radius: 0.75rem; /* Rounded buttons */
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft button shadow */
+        }
+
+        button.primary {
+            background-color: #6366f1; /* Indigo primary */
+            color: #ffffff;
+        }
+
+        button.primary:hover {
+            background-color: #4f46e5; /* Darker indigo */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* More pronounced hover shadow */
+        }
+
+        button.secondary {
+            background-color: #e2e8f0; /* Light gray secondary */
+            color: #2d3748;
+        }
+
+        button.secondary:hover {
+            background-color: #cbd5e0; /* Darker light gray */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .disclaimer {
+            font-size: 0.85rem;
+            color: #718096; /* Light gray text */
+            text-align: center;
+            margin-top: 1.5rem;
+            padding: 1.25rem;
+            background-color: #fffbeb; /* Light yellow background */
+            border: 1px solid #fed7aa; /* Orange border */
+            border-radius: 0.75rem; /* Rounded corners */
+        }
+
+        .scenario-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem; /* Rounded list container */
+            background-color: #ffffff;
+            margin-bottom: 1rem;
+        }
+
+        .scenario-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem; /* Padding for list items */
+            border-bottom: 1px solid #f3f4f6;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .scenario-item:hover {
+            background-color: #f0f4f8;
+        }
+        .scenario-item.selected {
+            background-color: #e0e7ff; /* Light blue for selected */
+            font-weight: 600;
+        }
+
+        .scenario-item:last-child {
+            border-bottom: none;
+        }
+
+        .scenario-name {
+            flex-grow: 1;
+            color: #2d3748;
+        }
+
+        .scenario-actions button {
+            padding: 0.5rem 1rem; /* Smaller padding for action buttons */
+            font-size: 0.8rem;
+            margin-left: 0.75rem; /* Spacing between action buttons */
+            box-shadow: none;
+            transform: none;
+            border-radius: 0.5rem; /* Rounded action buttons */
+        }
+
+        .scenario-actions button.delete {
+            background-color: #ef4444; /* Red for delete */
+            color: #ffffff;
+        }
+        .scenario-actions button.delete:hover {
+            background-color: #dc2626;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            color: #718096;
+        }
+
+        /* Mobile adjustments (fine-tuning existing breakpoints) */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem; /* Less padding on very small screens */
+            }
+            .container {
+                padding: 1.5rem;
+                margin-top: 1rem;
+                margin-bottom: 1rem;
+                gap: 1.5rem;
+            }
+            h1 {
+                font-size: 2rem;
+                margin-bottom: 1rem;
+            }
+            .input-section, .output-section, .scenario-section {
+                padding: 1rem;
+            }
+            .input-row > div {
+                flex: 1 1 100%; /* Stack columns on smaller screens */
+                min-width: unset; /* Remove minimum width constraint */
+            }
+            .button-group button {
+                width: 100%; /* Full width buttons on mobile */
+            }
+            .scenario-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+                padding: 0.75rem;
+            }
+            .scenario-actions {
+                width: 100%;
+                display: flex;
+                justify-content: flex-end; /* Align action buttons to the right */
+            }
+            .scenario-actions button {
+                margin-left: 0.5rem; /* Slightly less margin for small buttons */
+                margin-top: 0.25rem;
+            }
+            .disclaimer {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💰 US Net Wage Calculator</h1>
+        <p class="text-center text-gray-600 -mt-4 mb-4">
+            Accurately understand your salary, taxes, and deductions to determine your take-home pay.
+            <br>Save and compare various scenarios!
+        </p>
+
+        <!-- Input Section -->
+        <div class="input-section">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Salary Information</h2>
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="grossSalary">Gross Salary (Pre-tax):</label>
+                    <input type="number" id="grossSalary" placeholder="e.g., 60000" min="0" value="60000">
+                </div>
+                <div class="input-group">
+                    <label for="payFrequency">Pay Frequency:</label>
+                    <select id="payFrequency">
+                        <option value="annually">Annually</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="semi-monthly">Semi-Monthly</option>
+                        <option value="bi-weekly" selected>Bi-Weekly</option>
+                        <option value="weekly">Weekly</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="employmentType">Employment Type:</label>
+                    <select id="employmentType">
+                        <option value="w2" selected>Employed (W-2)</option>
+                        <option value="1099">Self-Employed (1099)</option>
+                    </select>
+                    <p class="text-xs text-gray-500">How your income is reported (W-2 for employees, 1099 for independent contractors/self-employed).</p>
+                </div>
+                <div class="input-group">
+                    <label for="federalTaxRate">Estimated Federal Tax Rate (%):</label>
+                    <!-- Federal tax rates are progressive and depend on income bracket and filing status. This is a general estimate. -->
+                    <input type="number" id="federalTaxRate" placeholder="e.g., 15" min="0" max="100" value="15">
+                    <p class="text-xs text-gray-500">2025 estimated federal tax rate. Actual rate varies by income, deductions, and filing status. (e.g., 15%)</p>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="stateSelect">State:</label>
+                    <select id="stateSelect">
+                        <!-- Options will be dynamically populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="stateTaxRate">Estimated State Tax Rate (%):</label>
+                    <!-- State tax rates vary by state, and some states have no income tax. This is a general estimate. -->
+                    <input type="number" id="stateTaxRate" placeholder="e.g., 5" min="0" max="100" value="5">
+                    <p class="text-xs text-gray-500">2025 estimated state tax rate. Varies by state; some states have no income tax. This field will update automatically based on state selection, but you can adjust it.</p>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label for="otherDeductions">Other Deductions (Annual Total):</label>
+                <input type="number" id="otherDeductions" placeholder="e.g., 401k, health insurance, annual total" min="0" value="2000">
+                <p class="text-xs text-gray-500">Annual total of pre-tax deductions like 401k, health insurance premiums, etc.</p>
+            </div>
+
+            <div class="button-group">
+                <button id="calculateBtn" class="primary">Calculate</button>
+            </div>
+        </div>
+
+        <!-- Output Section -->
+        <div class="output-section">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Calculation Results (Estimated)</h2>
+            <div class="output-item">
+                <span>Annual Gross Salary (Pre-tax)</span>
+                <span id="outputAnnualGross">$0.00</span>
+            </div>
+            <div class="output-item">
+                <span>Estimated Federal Tax</span>
+                <span id="outputFederalTax">$0.00</span>
+            </div>
+            <div class="output-item">
+                <span>Estimated State Tax</span>
+                <span id="outputStateTaxOutput">$0.00</span>
+            </div>
+            <div class="output-item">
+                <span id="ficaOrSETaxLabel">Social Security & Medicare Tax (FICA)</span>
+                <span id="outputFicaOrSETax">$0.00</span>
+            </div>
+            <div class="output-item" id="seTaxDeductionRow" style="display: none;">
+                <span>Self-Employment Tax Deduction</span>
+                <span id="outputSETaxDeduction">$0.00</span>
+            </div>
+            <div class="output-item">
+                <span>Other Deductions (Pre-Tax)</span>
+                <span id="outputOtherDeductions">$0.00</span>
+            </div>
+            <div class="output-item">
+                <span>Total Deductions</span>
+                <span id="outputTotalDeductions">$0.00</span>
+            </div>
+            <div class="output-item net-pay">
+                <span>Annual Estimated Net Pay</span>
+                <span id="outputAnnualNetPay">$0.00</span>
+            </div>
+            <div class="output-item net-pay">
+                <span id="outputPayPeriodLabel">Bi-Weekly Estimated Net Pay</span>
+                <span id="outputPayPeriodNetPay">$0.00</span>
+            </div>
+        </div>
+
+        <!-- Scenario Management Section -->
+        <div class="scenario-section">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Save and Compare Scenarios</h2>
+            <div class="scenario-list" id="scenarioList">
+                <!-- Scenarios will be loaded here -->
+                <p class="text-center text-gray-500 py-4">No saved scenarios.</p>
+            </div>
+            <div class="input-group">
+                <label for="scenarioName">Scenario Name (for saving):</label>
+                <input type="text" id="scenarioName" placeholder="e.g., Current Salary, New Job Offer, With Bonus">
+            </div>
+            <div class="button-group">
+                <button id="saveScenarioBtn" class="secondary">Save Current Scenario</button>
+                <button id="loadScenarioBtn" class="secondary" disabled>Load Selected Scenario</button>
+                <button id="deleteScenarioBtn" class="secondary delete" disabled>Delete Selected Scenario</button>
+            </div>
+        </div>
+
+        <p class="disclaimer">
+            ⚠️ This calculator provides estimated tax calculations based on 2025 federal tax assumptions and general state tax information. It does not replace accurate legal or financial advice. Actual taxes may vary significantly based on various factors (e.g., filing status, dependents, additional income, changes in state and local tax laws, specific deductions, etc.). For simplicity, for **self-employed (1099)** income, the "Gross Salary" input is treated as "Net Earnings from Self-Employment" before the 92.35% adjustment for self-employment tax calculation. For detailed tax information, please consult a tax professional or refer to the latest information from the IRS (Internal Revenue Service) and your respective state government websites. The Social Security wage base limit applied is based on 2024 figures ($168,600).
+        </p>
+
+        <footer>
+            <p>&copy; 2024 NetWageCalc. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Get DOM elements
+        const grossSalaryInput = document.getElementById('grossSalary');
+        const payFrequencySelect = document.getElementById('payFrequency');
+        const employmentTypeSelect = document.getElementById('employmentType'); // New employment type select
+        const federalTaxRateInput = document.getElementById('federalTaxRate');
+        const stateSelect = document.getElementById('stateSelect');
+        const stateTaxRateInput = document.getElementById('stateTaxRate');
+        const otherDeductionsInput = document.getElementById('otherDeductions');
+        const calculateBtn = document.getElementById('calculateBtn');
+
+        const outputAnnualGross = document.getElementById('outputAnnualGross');
+        const outputFederalTax = document.getElementById('outputFederalTax');
+        const outputStateTaxOutput = document.getElementById('outputStateTaxOutput');
+        const ficaOrSETaxLabel = document.getElementById('ficaOrSETaxLabel'); // Label for FICA/SE Tax
+        const outputFicaOrSETax = document.getElementById('outputFicaOrSETax'); // Value for FICA/SE Tax
+        const seTaxDeductionRow = document.getElementById('seTaxDeductionRow'); // Row for SE Tax Deduction
+        const outputSETaxDeduction = document.getElementById('outputSETaxDeduction'); // Value for SE Tax Deduction
+        const outputOtherDeductions = document.getElementById('outputOtherDeductions');
+        const outputTotalDeductions = document.getElementById('outputTotalDeductions');
+        const outputAnnualNetPay = document.getElementById('outputAnnualNetPay');
+        const outputPayPeriodLabel = document.getElementById('outputPayPeriodLabel');
+        const outputPayPeriodNetPay = document.getElementById('outputPayPeriodNetPay');
+
+        const scenarioNameInput = document.getElementById('scenarioName');
+        const saveScenarioBtn = document.getElementById('saveScenarioBtn');
+        const loadScenarioBtn = document.getElementById('loadScenarioBtn');
+        const deleteScenarioBtn = document.getElementById('deleteScenarioBtn');
+        const scenarioListDiv = document.getElementById('scenarioList');
+
+        // Fixed tax rates and limits (based on 2024, subject to change for 2025)
+        const SS_RATE = 0.062; // Social Security Tax Rate (Employee Share)
+        const MEDICARE_RATE = 0.0145; // Medicare Tax Rate (Employee Share)
+        const SS_WAGE_BASE_LIMIT_2024 = 168600; // Social Security wage base limit
+
+        // Simplified 2025 State Tax Rates (Estimated for this calculator)
+        // Note: This does NOT implement progressive state tax brackets.
+        // It provides a default *flat rate estimate* for simplicity. Users can adjust.
+        const stateTaxData = {
+            "AL": { name: "Alabama", rate: 5 },
+            "AK": { name: "Alaska", rate: 0 }, // No income tax
+            "AZ": { name: "Arizona", rate: 2.5 },
+            "AR": { name: "Arkansas", rate: 4.9 },
+            "CA": { name: "California", rate: 7 }, // Progressive, high. Using an estimated average.
+            "CO": { name: "Colorado", rate: 4.4 },
+            "CT": { name: "Connecticut", rate: 6.99 },
+            "DE": { name: "Delaware", rate: 6.6 },
+            "FL": { name: "Florida", rate: 0 }, // No income tax
+            "GA": { name: "Georgia", rate: 5.75 },
+            "HI": { name: "Hawaii", rate: 8 }, // Progressive, high. Using an estimated average.
+            "ID": { name: "Idaho", rate: 5.8 },
+            "IL": { name: "Illinois", rate: 4.95 },
+            "IN": { name: "Indiana", rate: 3.15 },
+            "IA": { name: "Iowa", rate: 3.8 },
+            "KS": { name: "Kansas", rate: 5.7 },
+            "KY": { name: "Kentucky", rate: 4.5 },
+            "LA": { name: "Louisiana", rate: 3 },
+            "ME": { name: "Maine", rate: 7.15 },
+            "MD": { name: "Maryland", rate: 5.75 },
+            "MA": { name: "Massachusetts", rate: 9 }, // Flat tax, but with nuances
+            "MI": { name: "Michigan", rate: 4.25 },
+            "MN": { name: "Minnesota", rate: 7.5 }, // Progressive, high.
+            "MS": { name: "Mississippi", rate: 4.4 },
+            "MO": { name: "Missouri", rate: 4.7 },
+            "MT": { name: "Montana", rate: 6.75 },
+            "NE": { name: "Nebraska", rate: 5.2 },
+            "NV": { name: "Nevada", rate: 0 }, // No income tax
+            "NH": { name: "New Hampshire", rate: 0 }, // No earned income tax (only interest/dividends)
+            "NJ": { name: "New Jersey", rate: 8 }, // Progressive
+            "NM": { name: "New Mexico", rate: 4.9 },
+            "NY": { name: "New York", rate: 7 }, // Progressive, high. Using an estimated average.
+            "NC": { name: "North Carolina", rate: 4.5 },
+            "ND": { name: "North Dakota", rate: 2.64 },
+            "OH": { name: "Ohio", rate: 3.99 },
+            "OK": { name: "Oklahoma", rate: 4.75 },
+            "OR": { name: "Oregon", rate: 8 }, // Progressive
+            "PA": { name: "Pennsylvania", rate: 3.07 }, // Flat tax
+            "RI": { name: "Rhode Island", rate: 5.99 },
+            "SC": { name: "South Carolina", rate: 6.5 },
+            "SD": { name: "South Dakota", rate: 0 }, // No income tax
+            "TN": { name: "Tennessee", rate: 0 }, // No income tax
+            "TX": { name: "Texas", rate: 0 }, // No income tax
+            "UT": { name: "Utah", rate: 4.85 },
+            "VT": { name: "Vermont", rate: 8.75 },
+            "VA": { name: "Virginia", rate: 5.75 },
+            "WA": { name: "Washington", rate: 0 }, // No income tax (has capital gains tax, but not income tax)
+            "WV": { name: "West Virginia", rate: 4.82 },
+            "WI": { name: "Wisconsin", rate: 7.65 },
+            "WY": { name: "Wyoming", rate: 0 }  // No income tax
+        };
+
+        let scenarios = []; // Array of scenarios to be loaded from local storage
+        let selectedScenarioId = null; // Currently selected scenario ID
+
+        // Currency formatter
+        const currencyFormatter = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+
+        /**
+         * Validates a number and replaces it with a default value if invalid.
+         * @param {string|number} value - Input value
+         * @param {number} defaultValue - Default value
+         * @returns {number} Valid number or default value
+         */
+        function parseAndValidateNumber(value, defaultValue = 0) {
+            const num = parseFloat(value);
+            return isNaN(num) || num < 0 ? defaultValue : num;
+        }
+
+        /**
+         * Calculates annual gross salary based on pay frequency.
+         * @param {number} gross - Input gross pay
+         * @param {string} frequency - Pay frequency ('weekly', 'bi-weekly', 'semi-monthly', 'monthly', 'annually')
+         * @returns {number} Annual gross salary
+         */
+        function calculateAnnualGross(gross, frequency) {
+            switch (frequency) {
+                case 'weekly': return gross * 52;
+                case 'bi-weekly': return gross * 26;
+                case 'semi-monthly': return gross * 24;
+                case 'monthly': return gross * 12;
+                case 'annually': return gross;
+                default: return 0;
+            }
+        }
+
+        /**
+         * Divides annual gross salary by pay period frequency.
+         * @param {number} annualGross - Annual gross salary
+         * @param {string} frequency - Pay frequency
+         * @returns {number} Amount for the corresponding pay period
+         */
+        function convertAnnualToPayPeriod(annualGross, frequency) {
+            switch (frequency) {
+                case 'weekly': return annualGross / 52;
+                case 'bi-weekly': return annualGross / 26;
+                case 'semi-monthly': return annualGross / 24;
+                case 'monthly': return annualGross / 12;
+                case 'annually': return annualGross;
+                default: return 0;
+            }
+        }
+
+        /**
+         * Performs salary calculation and updates the UI.
+         */
+        function calculateNetPay() {
+            // Get input values
+            const grossSalary = parseAndValidateNumber(grossSalaryInput.value);
+            const payFrequency = payFrequencySelect.value;
+            const employmentType = employmentTypeSelect.value; // Get employment type
+            const federalTaxRate = parseAndValidateNumber(federalTaxRateInput.value) / 100;
+            const stateTaxRate = parseAndValidateNumber(stateTaxRateInput.value) / 100;
+            const otherDeductions = parseAndValidateNumber(otherDeductionsInput.value); // Annual total
+
+            // Calculate annual gross salary
+            const annualGross = calculateAnnualGross(grossSalary, payFrequency);
+
+            let totalFicaOrSETax = 0;
+            let seTaxDeductionAmount = 0;
+            let taxableIncomeForFederalState = annualGross;
+
+            // --- FICA (W-2) vs. Self-Employment (1099) Tax Calculation ---
+            if (employmentType === 'w2') {
+                // W-2: Employee pays half of FICA
+                const ssTaxEmployeeShare = Math.min(annualGross, SS_WAGE_BASE_LIMIT_2024) * SS_RATE;
+                const medicareTaxEmployeeShare = annualGross * MEDICARE_RATE;
+                totalFicaOrSETax = ssTaxEmployeeShare + medicareTaxEmployeeShare;
+                
+                ficaOrSETaxLabel.textContent = 'Social Security & Medicare Tax (FICA)';
+                seTaxDeductionRow.style.display = 'none'; // Hide SE deduction row
+                outputSETaxDeduction.textContent = currencyFormatter.format(0);
+
+                taxableIncomeForFederalState = annualGross - otherDeductions;
+
+            } else if (employmentType === '1099') {
+                // 1099: Self-Employed pays both halves (Self-Employment Tax)
+                // For simplicity, treating grossSalary as "Net Earnings from Self-Employment" for SE tax calculation.
+                // Actual SE tax is calculated on 92.35% of Net Earnings from Self-Employment.
+                const netEarningsForSETax = annualGross * 0.9235; // This is a simplification for a full app.
+
+                const seSSTax = Math.min(netEarningsForSETax, SS_WAGE_BASE_LIMIT_2024) * SS_RATE * 2; // Employee + Employer share (12.4%)
+                const seMedicareTax = netEarningsForSETax * MEDICARE_RATE * 2; // Employee + Employer share (2.9%)
+                totalFicaOrSETax = seSSTax + seMedicareTax;
+
+                seTaxDeductionAmount = totalFicaOrSETax * 0.5; // One-half of SE tax is deductible for income tax
+
+                ficaOrSETaxLabel.textContent = 'Self-Employment Tax (SE Tax)';
+                seTaxDeductionRow.style.display = 'flex'; // Show SE deduction row
+                outputSETaxDeduction.textContent = currencyFormatter.format(seTaxDeductionAmount);
+
+                taxableIncomeForFederalState = annualGross - otherDeductions - seTaxDeductionAmount;
+            }
+
+            // Ensure taxable income doesn't go below zero
+            taxableIncomeForFederalState = Math.max(0, taxableIncomeForFederalState);
+
+            // Calculate Federal and State Taxes based on adjusted taxable income
+            const federalTax = taxableIncomeForFederalState * federalTaxRate;
+            const stateTax = taxableIncomeForFederalState * stateTaxRate;
+
+            // Total deductions from Gross Pay (what comes OUT of the paycheck)
+            const totalDeductions = federalTax + stateTax + totalFicaOrSETax + otherDeductions;
+
+            // Calculate annual net pay
+            const annualNetPay = annualGross - totalDeductions;
+
+            // Calculate net pay per pay period
+            const payPeriodNetPay = convertAnnualToPayPeriod(annualNetPay, payFrequency);
+
+            // Update UI results
+            outputAnnualGross.textContent = currencyFormatter.format(annualGross);
+            outputFederalTax.textContent = currencyFormatter.format(federalTax);
+            outputStateTaxOutput.textContent = currencyFormatter.format(stateTax);
+            outputFicaOrSETax.textContent = currencyFormatter.format(totalFicaOrSETax);
+            outputOtherDeductions.textContent = currencyFormatter.format(otherDeductions);
+            outputTotalDeductions.textContent = currencyFormatter.format(totalDeductions);
+            outputAnnualNetPay.textContent = currencyFormatter.format(annualNetPay);
+
+            // Update pay period label
+            let payPeriodText = '';
+            switch (payFrequency) {
+                case 'weekly': payPeriodText = 'Weekly'; break;
+                case 'bi-weekly': payPeriodText = 'Bi-Weekly'; break;
+                case 'semi-monthly': payPeriodText = 'Semi-Monthly'; break;
+                case 'monthly': payPeriodText = 'Monthly'; break;
+                case 'annually': payPeriodText = 'Annual'; break;
+            }
+            outputPayPeriodLabel.textContent = `${payPeriodText} Estimated Net Pay`;
+            outputPayPeriodNetPay.textContent = currencyFormatter.format(payPeriodNetPay);
+
+            // Return calculated values for scenario saving
+            return {
+                inputs: {
+                    grossSalary: grossSalary,
+                    payFrequency: payFrequency,
+                    employmentType: employmentType, // Save employment type
+                    federalTaxRate: federalTaxRate * 100, // Save as percentage
+                    stateCode: stateSelect.value, // Save selected state code
+                    stateTaxRate: stateTaxRate * 100,   // Save as percentage
+                    otherDeductions: otherDeductions
+                },
+                results: {
+                    annualGross: annualGross,
+                    federalTax: federalTax,
+                    stateTax: stateTax,
+                    ficaOrSETax: totalFicaOrSETax,
+                    seTaxDeduction: seTaxDeductionAmount, // Save SE tax deduction
+                    otherDeductions: otherDeductions,
+                    totalDeductions: totalDeductions,
+                    annualNetPay: annualNetPay,
+                    payPeriodNetPay: payPeriodNetPay,
+                    payPeriodLabel: payPeriodText
+                }
+            };
+        }
+
+        /**
+         * Populates the state dropdown with options.
+         */
+        function populateStates() {
+            stateSelect.innerHTML = ''; // Clear existing options
+            let defaultOption = document.createElement('option');
+            defaultOption.value = "";
+            defaultOption.textContent = "Select a State";
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            stateSelect.appendChild(defaultOption);
+
+            // Sort states alphabetically by name
+            const sortedStates = Object.keys(stateTaxData).sort((a, b) => 
+                stateTaxData[a].name.localeCompare(stateTaxData[b].name)
+            );
+
+            sortedStates.forEach(code => {
+                const option = document.createElement('option');
+                option.value = code;
+                option.textContent = stateTaxData[code].name;
+                stateSelect.appendChild(option);
+            });
+
+            // Set initial state based on previous selection or default
+            const lastSelectedState = localStorage.getItem('lastSelectedState');
+            if (lastSelectedState && stateTaxData[lastSelectedState]) {
+                stateSelect.value = lastSelectedState;
+                updateStateTaxRate();
+            } else {
+                stateSelect.value = "CA"; // Default to California if no previous selection
+                updateStateTaxRate();
+            }
+        }
+
+        /**
+         * Updates the state tax rate input field based on selected state.
+         */
+        function updateStateTaxRate() {
+            const selectedStateCode = stateSelect.value;
+            if (stateTaxData[selectedStateCode]) {
+                stateTaxRateInput.value = stateTaxData[selectedStateCode].rate;
+            } else {
+                stateTaxRateInput.value = 0; // Default if state not found or "Select a State"
+            }
+            calculateNetPay(); // Recalculate after state change
+            localStorage.setItem('lastSelectedState', selectedStateCode); // Save last selected state
+        }
+
+        /**
+         * Loads scenarios from local storage.
+         */
+        function loadScenarios() {
+            const storedScenarios = localStorage.getItem('netWageCalcScenarios');
+            if (storedScenarios) {
+                try {
+                    scenarios = JSON.parse(storedScenarios);
+                } catch (e) {
+                    console.error("Error parsing local storage scenarios:", e);
+                    scenarios = [];
+                }
+            } else {
+                scenarios = [];
+            }
+            renderScenarios();
+        }
+
+        /**
+         * Saves scenarios to local storage.
+         */
+        function saveScenarios() {
+            localStorage.setItem('netWageCalcScenarios', JSON.stringify(scenarios));
+            renderScenarios();
+        }
+
+        /**
+         * Saves the current input values as a new scenario.
+         */
+        function saveCurrentScenario() {
+            const scenarioName = scenarioNameInput.value.trim();
+            if (!scenarioName) {
+                displayMessage("Please enter a scenario name.");
+                return;
+            }
+
+            const currentCalculation = calculateNetPay(); // Get currently calculated values
+            const newScenario = {
+                id: Date.now(), // Unique ID
+                name: scenarioName,
+                inputs: currentCalculation.inputs,
+                results: currentCalculation.results,
+                timestamp: new Date().toLocaleString()
+            };
+
+            scenarios.push(newScenario);
+            saveScenarios(); // Save to local storage
+            scenarioNameInput.value = ''; // Clear input field
+            selectedScenarioId = null; // Deselect
+            updateScenarioButtons();
+            displayMessage("Scenario saved successfully!");
+        }
+
+        /**
+         * Renders saved scenarios to the UI.
+         */
+        function renderScenarios() {
+            scenarioListDiv.innerHTML = ''; // Clear existing list
+
+            if (scenarios.length === 0) {
+                scenarioListDiv.innerHTML = '<p class="text-center text-gray-500 py-4">No saved scenarios.</p>';
+                return;
+            }
+
+            scenarios.forEach(scenario => {
+                const scenarioItem = document.createElement('div');
+                scenarioItem.className = `scenario-item ${selectedScenarioId === scenario.id ? 'selected' : ''}`;
+                scenarioItem.dataset.id = scenario.id;
+
+                scenarioItem.innerHTML = `
+                    <div class="scenario-name">
+                        <strong>${scenario.name}</strong>
+                        <p class="text-sm text-gray-500">${scenario.timestamp}</p>
+                        <p class="text-sm text-gray-700">Net Pay: ${currencyFormatter.format(scenario.results.payPeriodNetPay)} (${scenario.results.payPeriodLabel})</p>
+                    </div>
+                    <div class="scenario-actions">
+                        <button class="secondary load-btn" data-id="${scenario.id}">Load</button>
+                        <button class="secondary delete-btn" data-id="${scenario.id}">Delete</button>
+                    </div>
+                `;
+                scenarioListDiv.appendChild(scenarioItem);
+            });
+
+            // Add click event listeners
+            scenarioListDiv.querySelectorAll('.scenario-item').forEach(item => {
+                item.addEventListener('click', (event) => {
+                    // Toggle selection only if not clicking inside a button
+                    if (!event.target.closest('button')) {
+                        const id = parseInt(item.dataset.id);
+                        if (selectedScenarioId === id) {
+                            selectedScenarioId = null; // Deselect
+                        } else {
+                            selectedScenarioId = id; // Select
+                        }
+                        renderScenarios(); // Update UI to show selection
+                        updateScenarioButtons();
+                    }
+                });
+            });
+
+            scenarioListDiv.querySelectorAll('.load-btn').forEach(btn => {
+                btn.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Prevent parent click event
+                    selectedScenarioId = parseInt(event.target.dataset.id);
+                    loadSelectedScenario();
+                });
+            });
+
+            scenarioListDiv.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Prevent parent click event
+                    selectedScenarioId = parseInt(event.target.dataset.id);
+                    deleteSelectedScenario();
+                });
+            });
+
+            updateScenarioButtons();
+        }
+
+        /**
+         * Loads the input values of the selected scenario and applies them to the UI.
+         */
+        function loadSelectedScenario() {
+            if (selectedScenarioId === null) {
+                displayMessage("Please select a scenario to load.");
+                return;
+            }
+
+            const scenarioToLoad = scenarios.find(s => s.id === selectedScenarioId);
+            if (scenarioToLoad) {
+                grossSalaryInput.value = scenarioToLoad.inputs.grossSalary;
+                payFrequencySelect.value = scenarioToLoad.inputs.payFrequency;
+                employmentTypeSelect.value = scenarioToLoad.inputs.employmentType; // Load employment type
+                federalTaxRateInput.value = scenarioToLoad.inputs.federalTaxRate;
+                stateSelect.value = scenarioToLoad.inputs.stateCode;
+                stateTaxRateInput.value = scenarioToLoad.inputs.stateTaxRate;
+                otherDeductionsInput.value = scenarioToLoad.inputs.otherDeductions;
+                scenarioNameInput.value = scenarioToLoad.name; // Load name as well
+
+                calculateNetPay(); // Recalculate with loaded values
+                displayMessage(`Scenario '${scenarioToLoad.name}' loaded.`);
+            } else {
+                displayMessage("Selected scenario not found.");
+                selectedScenarioId = null;
+                updateScenarioButtons();
+                renderScenarios();
+            }
+        }
+
+        /**
+         * Deletes the selected scenario.
+         */
+        function deleteSelectedScenario() {
+            if (selectedScenarioId === null) {
+                displayMessage("Please select a scenario to delete.");
+                return;
+            }
+
+            // Using a simple confirmation for now, but a custom modal is recommended for better UX
+            const confirmDelete = confirm("Are you sure you want to delete this scenario?"); 
+            if (!confirmDelete) {
+                return;
+            }
+
+            scenarios = scenarios.filter(s => s.id !== selectedScenarioId);
+            saveScenarios(); // Save to local storage
+            displayMessage("Scenario deleted successfully.");
+            selectedScenarioId = null; // Deselect
+            updateScenarioButtons();
+        }
+
+        /**
+         * Updates the enabled/disabled state of scenario-related buttons.
+         */
+        function updateScenarioButtons() {
+            const hasScenarios = scenarios.length > 0;
+            const isScenarioSelected = selectedScenarioId !== null;
+
+            loadScenarioBtn.disabled = !isScenarioSelected;
+            deleteScenarioBtn.disabled = !isScenarioSelected;
+
+            // Enable "Save Current Scenario" only if a name is entered
+            saveScenarioBtn.disabled = scenarioNameInput.value.trim() === '';
+        }
+
+        /**
+         * Displays a simple message to the user.
+         * In a real app, this would be a custom modal or toast notification.
+         * @param {string} message - The message to display.
+         */
+        function displayMessage(message) {
+            // For now, using alert, but for real production, implement a custom modal/toast
+            alert(message);
+        }
+
+        // On initial load
+        document.addEventListener('DOMContentLoaded', () => {
+            populateStates(); // Populate states dropdown first
+            loadScenarios(); // Load scenarios from local storage
+            calculateNetPay(); // Perform calculation with initial values
+        });
+
+        // Event Listeners
+        calculateBtn.addEventListener('click', calculateNetPay);
+
+        // Input change listeners
+        [grossSalaryInput, payFrequencySelect, federalTaxRateInput, otherDeductionsInput].forEach(element => {
+            element.addEventListener('input', calculateNetPay);
+        });
+
+        // Listen for employment type change
+        employmentTypeSelect.addEventListener('change', calculateNetPay);
+
+        // Listen for state selection change
+        stateSelect.addEventListener('change', updateStateTaxRate);
+        // Listen for manual state tax rate input changes
+        stateTaxRateInput.addEventListener('input', calculateNetPay);
+
+        // Scenario Save button click
+        saveScenarioBtn.addEventListener('click', saveCurrentScenario);
+        // Scenario Load button click
+        loadScenarioBtn.addEventListener('click', loadSelectedScenario);
+        // Scenario Delete button click
+        deleteScenarioBtn.addEventListener('click', deleteSelectedScenario);
+
+        // Enable/disable save button based on scenario name input
+        scenarioNameInput.addEventListener('input', updateScenarioButtons);
+
+        // Initial button state update
+        updateScenarioButtons();
+    </script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://netwagecalc.netlify.app/sitemap.xml
